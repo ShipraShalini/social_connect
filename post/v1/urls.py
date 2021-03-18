@@ -12,5 +12,5 @@ post_detail = PostViewSet.as_view(
 
 urlpatterns = [
     path("post/", post_list, name="post-list"),
-    path("post/<int:pk>/", post_detail, name="snippet-detail"),
+    path("post/<uuid:pk>/", post_detail, name="post-detail"),
 ]
