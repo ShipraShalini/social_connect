@@ -13,8 +13,10 @@ from django.db.models import (
 
 class Post(Model):
     uuid = UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = ForeignKey(User, related_name="posts", on_delete=CASCADE)
-    message = TextField(null=False, blank=False)
+    user = ForeignKey(
+        User, related_name="posts", on_delete=CASCADE, null=False, blank=False
+    )
+    message = TextField()
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
