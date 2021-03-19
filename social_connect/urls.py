@@ -51,6 +51,7 @@ urlpatterns = [
                 # Auth URLs
                 *auth_urls,
                 path("", include("post.v1.urls")),
+                path("access_req/", include("access.v1.urls")),
             ]
         ),
     ),

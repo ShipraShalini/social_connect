@@ -1,16 +1,24 @@
 from django.urls import path
 
-from post.v1.views import PostViewSet
-
-app_name = "post"
-
-post_list = PostViewSet.as_view({"get": "list", "post": "create"})
-post_detail = PostViewSet.as_view(
-    {"get": "retrieve", "put": "update", "patch": "partial_update", "delete": "destroy"}
+from access.v1.views import (
+    AdminAccessRequestView,
+    SuperAdminAccessRequestDecisionView,
+    SuperAdminAccessRequestListView,
 )
+
+app_name = "access"
 
 
 urlpatterns = [
-    path("post/", post_list, name="post-list"),
-    path("post/<uuid:pk>/", post_detail, name="post-detail"),
+    path("admin/", AdminAccessRequestView.as_view(), name="admin-access"),
+    path(
+        "superadmin/",
+        SuperAdminAccessRequestListView.as_view(),
+        name="superadmin-list",
+    ),
+    path(
+        "decision/<uuid:access_req_id>",
+        SuperAdminAccessRequestDecisionView.as_view(),
+        name="superadmin-decision",
+    ),
 ]

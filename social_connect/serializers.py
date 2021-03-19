@@ -11,4 +11,4 @@ class UserSerializer(ModelSerializer):
 class MinimalUserSerializer(ModelSerializer):
     class Meta:
         model = User
-        exclude = ["username", "first_name", "last_name", "email", "is_active"]
+        fields = ["id", "username", "first_name", "last_name", "email", "is_active"]

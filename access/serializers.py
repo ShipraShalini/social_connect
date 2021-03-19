@@ -5,8 +5,8 @@ from social_connect.serializers import MinimalUserSerializer
 
 
 class AccessRequestSerializer(ModelSerializer):
-    raised_by = MinimalUserSerializer()
-    super_admin = MinimalUserSerializer()
+    admin = MinimalUserSerializer()
+    superadmin = MinimalUserSerializer()
     user = MinimalUserSerializer()
 
     class Meta:

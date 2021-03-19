@@ -21,7 +21,7 @@ class AccessRequest(models.Model):
     )
 
     uuid = UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    raised_by = ForeignKey(User, on_delete=PROTECT, related_name="admin_requests")
+    admin = ForeignKey(User, on_delete=PROTECT, related_name="admin_requests")
     superadmin = ForeignKey(
         User,
         on_delete=PROTECT,

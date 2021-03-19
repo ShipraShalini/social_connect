@@ -3,6 +3,7 @@ import uuid
 from django.contrib.auth.models import User
 from django.db.models import (
     CASCADE,
+    CharField,
     DateTimeField,
     ForeignKey,
     Model,
@@ -16,6 +17,7 @@ class Post(Model):
     user = ForeignKey(
         User, related_name="posts", on_delete=CASCADE, null=False, blank=False
     )
+    title = CharField(max_length=510)
     message = TextField()
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)

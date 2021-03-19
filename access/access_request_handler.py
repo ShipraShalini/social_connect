@@ -19,10 +19,10 @@ class AccessRequestHandler:
         requests = AccessRequest.objects.filter(**query)
         requests = AccessRequestSerializer(requests, many=True).data
         for req in requests:
-            data[req.status].append(req)
+            data[req["status"]].append(req)
         return data
 
-    def take_decision(self, acccess_req_id, superadmin, data):
+    def take_decision(self, access_req_id, superadmin, data):
         # Discarding all other keys provided in the data as
         # only the following fields should be updated.
         data = {
@@ -30,6 +30,6 @@ class AccessRequestHandler:
             "decision_reason": data.get("decision_reason"),
             "status": data["status"],
         }
-        AccessRequest.objects.filter(uuid=acccess_req_id).update(**data)
-        req = AccessRequest.objects.get(uuid=acccess_req_id)
+        AccessRequest.objects.filter(uuid=access_req_id).update(**data)
+        req = AccessRequest.objects.get(uuid=access_req_id)
         return AccessRequestSerializer(req).data

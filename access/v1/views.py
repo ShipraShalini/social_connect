@@ -16,19 +16,23 @@ class AdminAccessRequestView(APIView):
         return JsonResponse(req)
 
     def get(self, request, *args, **kwargs):
-        data = AccessRequestHandler().get_request_list({"raised_by_id": request.user})
+        data = AccessRequestHandler().get_request_list({"admin_id": request.user})
         return JsonResponse(data)
 
 
-class SuperAdminAccessRequestView(APIView):
+class SuperAdminAccessRequestListView(APIView):
     permission_classes = (IsAuthenticated, IsSuperAdminUser)
 
     def get(self, request, *args, **kwargs):
         data = AccessRequestHandler().get_request_list({"superadmin_id": request.user})
         return JsonResponse(data)
 
-    def patch(self, request, uuid, *args, **kwargs):
+
+class SuperAdminAccessRequestDecisionView(APIView):
+    permission_classes = (IsAuthenticated, IsSuperAdminUser)
+
+    def patch(self, request, access_req_id, *args, **kwargs):
         superadmin = request.user
         data = request.data
-        req = AccessRequestHandler().create(superadmin, data)
+        req = AccessRequestHandler().take_decision(access_req_id, superadmin, data)
         return JsonResponse(req)

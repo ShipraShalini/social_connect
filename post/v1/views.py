@@ -14,6 +14,5 @@ class PostViewSet(ModelViewSet):
         return self.request.user.posts.all()
 
     def create(self, request, *args, **kwargs):
-        print("user_id", request.user.id)
         request.data["user"] = request.user.id
         return super().create(request, *args, **kwargs)
