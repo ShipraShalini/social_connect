@@ -54,6 +54,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "social_connect.middlewares.LogMiddleware",
+    "social_connect.middlewares.JSONExceptionMiddleWare",
 ]
 
 ROOT_URLCONF = "social_connect.urls"
@@ -88,6 +90,9 @@ DATABASES = {
         "PASSWORD": os.environ.get("DB_PASSWORD"),
         "HOST": os.environ.get("DB_HOST"),
         "PORT": os.environ.get("DB_PORT"),
+        "TEST": {
+            "NAME": os.environ.get("DB_TESTDATABASENAME", "testdatabase"),
+        },
     }
 }
 
@@ -135,9 +140,56 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
+    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
 }
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=600),
     "UPDATE_LAST_LOGIN": True,
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": True,
+    "root": {
+        "level": "WARNING",
+        "handlers": ["console"],
+    },
+    "formatters": {
+        "verbose": {
+            "format": "%(levelname)s %(asctime)s %(module)s "
+            "%(process)d %(thread)d %(message)s"
+        },
+        "standard": {
+            "format": "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] "
+            "%(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "logfile": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": "/home/shipra/code/social_connect/access_log.log",
+            "maxBytes": 50000,
+            "backupCount": 7,
+            "formatter": "standard",
+        },
+    },
+    "loggers": {
+        "django.db.backends": {
+            "level": "ERROR",
+            "handlers": ["console"],
+            "propagate": False,
+        },
+        "access_log": {
+            "handlers": ["logfile"],
+            "level": "INFO",
+            "propagate": True,
+        },
+    },
 }

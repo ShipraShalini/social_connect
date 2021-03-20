@@ -3,6 +3,7 @@ import uuid
 from django.contrib.auth.models import User
 from django.db.models import (
     CASCADE,
+    PROTECT,
     CharField,
     DateTimeField,
     ForeignKey,
@@ -21,6 +22,12 @@ class Post(Model):
     message = TextField()
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
+    created_by = ForeignKey(
+        User, on_delete=PROTECT, null=False, blank=False, related_name="created_posts"
+    )
+    updated_by = ForeignKey(
+        User, on_delete=PROTECT, null=False, blank=False, related_name="updated_posts"
+    )
 
     class Meta:
         ordering = ["-created_at"]

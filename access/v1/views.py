@@ -17,6 +17,7 @@ class AdminAccessRequestView(APIView):
 
     def get(self, request, *args, **kwargs):
         data = AccessRequestHandler().get_request_list({"admin_id": request.user})
+        raise ValueError("abc")
         return JsonResponse(data)
 
 
