@@ -141,6 +141,7 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
+    "EXCEPTION_HANDLER": "social_connect.exception_handler.drf_exception_handler",
 }
 
 SIMPLE_JWT = {
@@ -148,48 +149,48 @@ SIMPLE_JWT = {
     "UPDATE_LAST_LOGIN": True,
 }
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": True,
-    "root": {
-        "level": "WARNING",
-        "handlers": ["console"],
-    },
-    "formatters": {
-        "verbose": {
-            "format": "%(levelname)s %(asctime)s %(module)s "
-            "%(process)d %(thread)d %(message)s"
-        },
-        "standard": {
-            "format": "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] "
-            "%(message)s",
-        },
-    },
-    "handlers": {
-        "console": {
-            "level": "DEBUG",
-            "class": "logging.StreamHandler",
-            "formatter": "verbose",
-        },
-        "logfile": {
-            "level": "INFO",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": "/home/shipra/code/social_connect/access_log.log",
-            "maxBytes": 50000,
-            "backupCount": 7,
-            "formatter": "standard",
-        },
-    },
-    "loggers": {
-        "django.db.backends": {
-            "level": "ERROR",
-            "handlers": ["console"],
-            "propagate": False,
-        },
-        "access_log": {
-            "handlers": ["logfile"],
-            "level": "INFO",
-            "propagate": True,
-        },
-    },
-}
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": True,
+#     "root": {
+#         "level": "WARNING",
+#         "handlers": ["console"],
+#     },
+#     "formatters": {
+#         "verbose": {
+#             "format": "%(levelname)s %(asctime)s %(module)s "
+#             "%(process)d %(thread)d %(message)s"
+#         },
+#         "standard": {
+#             "format": "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] "
+#             "%(message)s",
+#         },
+#     },
+#     "handlers": {
+#         "console": {
+#             "level": "DEBUG",
+#             "class": "logging.StreamHandler",
+#             "formatter": "verbose",
+#         },
+#         "logfile": {
+#             "level": "INFO",
+#             "class": "logging.handlers.RotatingFileHandler",
+#             "filename": "/home/shipra/code/social_connect/access_log.log",
+#             "maxBytes": 50000,
+#             "backupCount": 7,
+#             "formatter": "standard",
+#         },
+#     },
+#     "loggers": {
+#         "django.db.backends": {
+#             "level": "ERROR",
+#             "handlers": ["console"],
+#             "propagate": False,
+#         },
+#         "access_log": {
+#             "handlers": ["logfile"],
+#             "level": "INFO",
+#             "propagate": True,
+#         },
+#     },
+# }

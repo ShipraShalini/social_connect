@@ -36,6 +36,10 @@ class AccessRequestHandler:
         requests = AccessRequest.objects.filter(
             **query, created_at__gte=last_valid_date
         )
+        if "superadmin_id" in query:
+            requests |= AccessRequest.objects.filter(
+                status=STATUS_PENDING, created_at__gte=last_valid_date
+            )
         requests = AccessRequestSerializer(requests, many=True).data
         for req in requests:
             data[req["status"]].append(req)

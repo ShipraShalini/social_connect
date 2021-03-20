@@ -5,29 +5,16 @@ from urllib.parse import parse_qs
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import JsonResponse
-from rest_framework import status
-from user_agents import parse
 
 from social_connect.constants import (
-    BUILTIN_ERROR_MESSAGE,
-    CLIENT_ERROR_SET,
     CONTENT_TYPE_METHOD_MAP,
     HTTP_HEADER_LIST,
     MASKED_DATA,
 )
+from social_connect.exception_handler import ExceptionHandler
+from social_connect.utils import get_ip, get_user_agent, is_api_request
 
 logger = logging.getLogger("access_log")
-
-
-def get_user_agent(headers):
-    """Get user agent from the request."""
-    raw_agent = headers.get("HTTP_USER_AGENT") or ""
-    pretty_agent = str(parse(raw_agent))
-    return raw_agent, pretty_agent
-
-
-def get_ip(headers):
-    return headers.get("HTTP_X_FORWARDED_FOR") or headers.get("REMOTE_ADDR")
 
 
 class LogMiddleware:
@@ -117,9 +104,14 @@ class LogMiddleware:
         error_data = getattr(request, "error_data", None)
         if error_data:
             return error_data
-        return json.loads(response.content.decode("utf8"))
+        try:
+            return json.loads(response.content.decode("utf8"))
+        except json.decoder.JSONDecodeError:
+            return None
 
     def __call__(self, request):
+        if not is_api_request(request):
+            return self.get_response(request)
         request_body = request.body
         requested_at = datetime.utcnow()
         response = self.get_response(request)
@@ -136,7 +128,6 @@ class LogMiddleware:
         user = request.user if request.user.is_authenticated else None
 
         headers = self.get_headers(request)
-        ip = get_ip(headers)
         self.mask_data(request_body, response_data, headers)
         raw_agent, pretty_agent = get_user_agent(headers)
 
@@ -151,7 +142,7 @@ class LogMiddleware:
                     "response_time": int(response_time),
                     "status_code": status_code,
                     "response_data": response_data,
-                    "ip": ip,
+                    "ip": get_ip(headers),
                     "raw_user_agent": raw_agent,
                     "user_agent": pretty_agent,
                     "headers": headers,
@@ -174,42 +165,8 @@ class JSONExceptionMiddleWare:
     def __call__(self, request, *args, **kwargs):
         return self.get_response(request)
 
-    def get_status_code(self, exc):
-        status_code = getattr(exc, "status_code", None)
-        if status_code is not None:
-            return status_code
-        if exc.__class__.__name__ in CLIENT_ERROR_SET:
-            return status.HTTP_400_BAD_REQUEST
-        else:
-            return status.HTTP_500_INTERNAL_SERVER_ERROR
-
-    def get_exception_message(self, exc):
-        """Get error message from the exception."""
-        exception_name = exc.__class__.__name__
-        message = BUILTIN_ERROR_MESSAGE.get(exception_name)
-        if message:
-            return message
-        message = getattr(exc, "message", None)
-        if message is not None:
-            return str(message)
-        message = getattr(exc, "args", None)
-        if message:
-            return str(message[0] if isinstance(message, tuple) else message)
-        else:
-            return exception_name
-
     def process_exception(self, request, exception):
-        headers = request.headers
-        status_code = self.get_status_code(exception)
-        _, user_agent = get_user_agent(headers)
-        error_data = {
-            "status": status_code,
-            "date": datetime.utcnow(),
-            "IP": get_ip(headers),
-            "user_agent": user_agent,
-            "user": getattr(request.user, "username", "AnonymousUser"),
-            "error": exception.__class__.__name__,
-            "error_msg": self.get_exception_message(exception),
-        }
-        logger.error(json.dumps(error_data, cls=DjangoJSONEncoder), exc_info=True)
+        if not is_api_request(request):
+            return
+        error_data = ExceptionHandler().handle_exception(request, exception)
         request.error_data = error_data

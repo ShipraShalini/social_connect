@@ -27,3 +27,5 @@ BUILTIN_ERROR_MESSAGE = {
     "Http404": "Not found",
     "PermissionDenied": "Permission denied.",
 }
+
+MODEL_VIEWSET_METHODNAMES = ["create", "retrieve", "list", "update", "destroy"]

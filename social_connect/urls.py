@@ -12,6 +12,11 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
+# Overriding default exception handlers for 404 & 403 errors.
+handler404 = "social_connect.exception_handler.json_page_not_found"
+handler403 = "social_connect.exception_handler.json_permission_denied"
+
+
 auth_urls = [
     path(
         "auth/token/",
@@ -27,31 +32,35 @@ auth_urls = [
 ]
 
 schema_urls = [
-    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
-        "api/schema/swaggerui/",
+        "schema/swaggerui/",
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
     path(
-        "api/schema/redoc/",
+        "schema/redoc/",
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
 ]
 
+
+v1_urls = [
+    # Auth URLs
+    *auth_urls,
+    path("", include("post.v1.urls")),
+    path("access_req/", include("access.v1.urls")),
+]
 urlpatterns = [
     # Admin URLs
     path("admin/", admin.site.urls),
     # Verion 1 URLs
     path(
-        "v1/",
+        "api/",
         include(
             [
-                # Auth URLs
-                *auth_urls,
-                path("", include("post.v1.urls")),
-                path("access_req/", include("access.v1.urls")),
+                path("v1/", include(v1_urls)),
             ]
         ),
     ),
