@@ -51,6 +51,6 @@ jobs:
           push: true
           repository: shiprashalini/social_connect
           add_git_labels: true
-          tags: latest
+          tags: shiprashalini/social_connect:latest
           tag_with_ref: true
           tag_with_sha: true
