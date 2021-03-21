@@ -49,4 +49,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: social_connect:latest
+          repository: shiprashalini/social_connect
+          add_git_labels: true
+          tags: latest
+          tag_with_ref: true
+          tag_with_sha: true
