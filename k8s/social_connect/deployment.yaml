@@ -17,6 +17,7 @@ spec:
       containers:
         - image: shiprashalini/social_connect:latest
           name: social-connect
+          imagePullPolicy: Always
           envFrom:
           - secretRef:
               name: social-connect-secrets
