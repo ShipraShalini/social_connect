@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-es-config
+  namespace: kube-logging
+data:
+  FLUENT_ELASTICSEARCH_HOST: "elasticsearch.kube-logging.svc.cluster.local"
+  FLUENT_ELASTICSEARCH_PORT: "9200"
+  FLUENT_ELASTICSEARCH_SCHEME: "http"
+  FLUENTD_SYSTEMD_CONF: "disable"
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: fluentd-config
+  namespace: kube-logging
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile
+data:
+  fluent.conf: |-
