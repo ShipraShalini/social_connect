@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.getenv("DEBUG", False))
+DEBUG = bool(os.getenv("DEBUG"))
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
@@ -150,48 +150,58 @@ SIMPLE_JWT = {
     "UPDATE_LAST_LOGIN": True,
 }
 
-# LOGGING = {
-#     "version": 1,
-#     "disable_existing_loggers": True,
-#     "root": {
-#         "level": "WARNING",
-#         "handlers": ["console"],
-#     },
-#     "formatters": {
-#         "verbose": {
-#             "format": "%(levelname)s %(asctime)s %(module)s "
-#             "%(process)d %(thread)d %(message)s"
-#         },
-#         "standard": {
-#             "format": "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] "
-#             "%(message)s",
-#         },
-#     },
-#     "handlers": {
-#         "console": {
-#             "level": "DEBUG",
-#             "class": "logging.StreamHandler",
-#             "formatter": "verbose",
-#         },
-#         "logfile": {
-#             "level": "INFO",
-#             "class": "logging.handlers.RotatingFileHandler",
-#             "filename": "/home/shipra/code/social_connect/access_log.log",
-#             "maxBytes": 50000,
-#             "backupCount": 7,
-#             "formatter": "standard",
-#         },
-#     },
-#     "loggers": {
-#         "django.db.backends": {
-#             "level": "ERROR",
-#             "handlers": ["console"],
-#             "propagate": False,
-#         },
-#         "access_log": {
-#             "handlers": ["logfile"],
-#             "level": "INFO",
-#             "propagate": True,
-#         },
-#     },
-# }
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": True,
+    "root": {
+        "level": "WARNING",
+        "handlers": ["console"],
+    },
+    "formatters": {
+        "verbose": {
+            "format": "%(levelname)s %(asctime)s %(module)s "
+            "%(process)d %(thread)d %(message)s"
+        },
+        "standard": {
+            "format": "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] "
+            "%(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "logfile": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(BASE_DIR, "access.log"),
+            "maxBytes": 50000,
+            "backupCount": 7,
+            "formatter": "standard",
+        },
+        "fluent": {
+            "level": "INFO",
+            "class": "fluent.handler.FluentHandler",
+            "formatter": "verbose",
+            "tag": "app.debug",
+            "host": os.getenv("FLUENT_HOST"),
+            "port": 24224,
+            # 'timeout':3.0,
+            "verbose": True,
+        },
+    },
+    "loggers": {
+        "django.db.backends": {
+            "level": "ERROR",
+            "handlers": ["console", "fluent"],
+            "propagate": False,
+        },
+        "access_log": {
+            "handlers": ["logfile", "fluent"],
+            "level": "INFO",
+            "propagate": True,
+        },
+    },
+}
