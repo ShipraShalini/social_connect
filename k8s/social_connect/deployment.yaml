@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: social-connect
+  labels:
+    app: social-connect
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: social-connect
+  template:
+    metadata:
+      labels:
+        app: social-connect
+    spec:
+      containers:
+        - image: shiprashalini/social_connect:latest
+          name: social-connect
+          envFrom:
+          - secretRef:
+              name: social-connect-secrets
+          - configMapRef:
+              name: social-connect-config
+          ports:
+            - containerPort: 8000
+              name: gunicorn
