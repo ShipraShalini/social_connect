@@ -1,5 +1,6 @@
 """social_connect URL Configuration"""
 from django.contrib import admin
+from django.http import JsonResponse
 from django.urls import include, path
 from drf_spectacular.views import (
     SpectacularAPIView,
@@ -15,6 +16,10 @@ from rest_framework_simplejwt.views import (
 # Overriding default exception handlers for 404 & 403 errors.
 handler404 = "social_connect.exception_handler.json_page_not_found"
 handler403 = "social_connect.exception_handler.json_permission_denied"
+
+
+def health(request):
+    return JsonResponse({"status": "healthy"})
 
 
 auth_urls = [
@@ -66,4 +71,5 @@ urlpatterns = [
     ),
     # Schema URLs
     *schema_urls,
+    path("", health),
 ]
