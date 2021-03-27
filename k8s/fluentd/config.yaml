@@ -17,24 +17,35 @@ metadata:
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
 data:
-  django.conf: |-
+  applog.conf: |-
     <source>
-      @type forward
-      port 24224
+      @type tail
+      path /var/log/containers/*.log
+      pos_file fluentd-docker.pos
+      read_from_head true
+      tag kubernetes.*
+      <parse>
+        @type multi_format
+        <pattern>
+          format json
+          time_key time
+          time_type string
+          time_format "%Y-%m-%dT%H:%M:%S.%NZ"
+          keep_time_key false
+        </pattern>
+        <pattern>
+          format regexp
+          expression /^(?<time>.+) (?<stream>stdout|stderr)( (?<logtag>.))? (?<log>.*)$/
+          time_format '%Y-%m-%dT%H:%M:%S.%N%:z'
+          keep_time_key false
+        </pattern>
+      </parse>
     </source>
 
+    <filter kubernetes.var.log.containers.**.log>
+      @type kubernetes_metadata
+    </filter>
+
     <match **>
-        @type copy
-        <store>
-          @type elasticsearch
-          host elasticsearch
-          port 9200
-          index_name django
-          logstash_format true
-          tag_key @log_name
-          scheme http
-        </store>
-        <store>
-            @type stdout
-        </store>
+      @type stdout
     </match>

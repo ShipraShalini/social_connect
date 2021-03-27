@@ -7,7 +7,6 @@ metadata:
     type: local
     app: elasticsearch
 spec:
-  storageClassName: manual
   capacity:
     storage: 5Gi
   accessModes:
@@ -23,7 +22,6 @@ metadata:
   labels:
     app: elasticsearch
 spec:
-  storageClassName: manual
   accessModes:
     - ReadWriteMany
   resources:

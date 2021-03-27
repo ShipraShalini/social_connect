@@ -3,5 +3,5 @@ kind: ConfigMap
 metadata:
   name: social-connect-config
 data:
-  DEBUG: "False"
+  DEBUG: ""
   ALLOWED_HOSTS: "*"

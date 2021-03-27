@@ -16,13 +16,12 @@ spec:
     spec:
       serviceAccount: fluentd
       serviceAccountName: fluentd
-      hostNetwork: true
       tolerations:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
       containers:
       - name: fluentd
-        image: fluent/fluentd-kubernetes-daemonset:v1.12.0-debian-elasticsearch7-1.3
+        image: shiprashalini/fluentd-kubernetes-daemonset
         envFrom:
           - configMapRef:
               name: fluentd-config
@@ -43,8 +42,8 @@ spec:
           mountPath: /var/lib/docker/containers
           readOnly: true
         - name: fluent-conf
-          mountPath: /fluentd/etc/django.conf
-          subPath: django.conf
+          mountPath: /fluentd/etc/applog.conf
+          subPath: applog.conf
           readOnly: true
       terminationGracePeriodSeconds: 30
       volumes:

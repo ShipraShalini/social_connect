@@ -28,3 +28,5 @@ spec:
               name: kibana-config
         ports:
         - containerPort: 5601
+          name: http
+          protocol: TCP
