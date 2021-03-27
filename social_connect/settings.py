@@ -176,6 +176,9 @@ LOGGING = {
             "format": "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] "
             "%(message)s",
         },
+        "json": {
+            "()": "json_log_formatter.JSONFormatter",
+        },
     },
     "handlers": {
         "console": {
@@ -194,7 +197,7 @@ LOGGING = {
         "fluent": {
             "level": "INFO",
             "class": "fluent.handler.FluentHandler",
-            "formatter": "verbose",
+            "formatter": "json",
             "tag": "app.debug",
             "host": os.getenv("FLUENT_HOST"),
             "port": 24224,
