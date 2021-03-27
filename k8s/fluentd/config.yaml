@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: fluentd-es-config
+  name: fluentd-config
   namespace: kube-logging
 data:
   FLUENT_ELASTICSEARCH_HOST: "elasticsearch.kube-logging.svc.cluster.local"
@@ -12,9 +12,29 @@ data:
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: fluentd-config
+  name: fluentd-conf
   namespace: kube-logging
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
 data:
-  fluent.conf: |-
+  django.conf: |-
+    <source>
+      @type forward
+      port 24224
+    </source>
+
+    <match **>
+        @type copy
+        <store>
+          @type elasticsearch
+          host elasticsearch
+          port 9200
+          index_name django
+          logstash_format true
+          tag_key @log_name
+          scheme http
+        </store>
+        <store>
+            @type stdout
+        </store>
+    </match>

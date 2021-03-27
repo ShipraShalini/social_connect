@@ -16,6 +16,7 @@ spec:
     spec:
       serviceAccount: fluentd
       serviceAccountName: fluentd
+      hostNetwork: true
       tolerations:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
@@ -25,6 +26,10 @@ spec:
         envFrom:
           - configMapRef:
               name: fluentd-config
+        ports:
+          - containerPort: 24224
+            hostPort: 24224
+            protocol: TCP
         resources:
           limits:
             memory: 512Mi
@@ -37,6 +42,10 @@ spec:
         - name: varlibdockercontainers
           mountPath: /var/lib/docker/containers
           readOnly: true
+        - name: fluent-conf
+          mountPath: /fluentd/etc/django.conf
+          subPath: django.conf
+          readOnly: true
       terminationGracePeriodSeconds: 30
       volumes:
       - name: varlog
@@ -45,3 +54,6 @@ spec:
       - name: varlibdockercontainers
         hostPath:
           path: /var/lib/docker/containers
+      - name: fluent-conf
+        configMap:
+          name: fluentd-conf
