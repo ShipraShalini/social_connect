@@ -4,8 +4,9 @@ from datetime import datetime
 from urllib.parse import parse_qs
 
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import JsonResponse
+from rest_framework.status import is_success
 
+from social_connect.api_response import APIResponse
 from social_connect.constants import (
     CONTENT_TYPE_METHOD_MAP,
     HTTP_HEADER_LIST,
@@ -18,6 +19,8 @@ logger = logging.getLogger("access_log")
 
 
 class LogMiddleware:
+    """Log all the requests that come to the app."""
+
     def __init__(self, get_response):
         """Initialize."""
         self.get_response = get_response
@@ -73,8 +76,8 @@ class LogMiddleware:
         data = response_data
         if "refresh" in response_data:
             data["refresh"] = self._mask_token(data["refresh"])
-        elif "access" in response_data:
-            data["refresh"] = self._mask_token(data["access"])
+        if "access" in response_data:
+            data["access"] = self._mask_token(data["access"])
 
     def _mask_token(self, token):
         """
@@ -101,6 +104,7 @@ class LogMiddleware:
             headers["HTTP_AUTHORIZATION"] = self._mask_token(auth_header)
 
     def get_response_data(self, request, response):
+        """Get response data, if there's an error get error data."""
         error_data = getattr(request, "error_data", None)
         if error_data:
             return error_data
@@ -109,7 +113,16 @@ class LogMiddleware:
         except json.decoder.JSONDecodeError:
             return None
 
+    def get_log_message(self, status_code, request):
+        """Return message to be logged by the logger."""
+        return (
+            "error_log"
+            if not is_success(status_code) or getattr(request, "error_data", None)
+            else "access_log"
+        )
+
     def __call__(self, request):
+        """Middleware call method."""
         if not is_api_request(request):
             return self.get_response(request)
         request_body = request.body
@@ -132,8 +145,9 @@ class LogMiddleware:
         raw_agent, pretty_agent = get_user_agent(headers)
 
         try:
-            log_data = json.dumps(
-                {
+            logger.info(
+                "access_log",
+                extra={
                     "user": user.username if user else None,
                     "path": path,
                     "method": method,
@@ -147,13 +161,13 @@ class LogMiddleware:
                     "user_agent": pretty_agent,
                     "headers": headers,
                 },
-                cls=DjangoJSONEncoder,
             )
-            logger.info(log_data)
         except Exception as e:  # noqa
-            logger.error(e)
+            logger.error(e, exc_info=True)
         if getattr(request, "error_data", None):
-            return JsonResponse(request.error_data, status=response.status_code)
+            return APIResponse(
+                request.error_data, is_success=False, status=response.status_code
+            )
         return response
 
 
