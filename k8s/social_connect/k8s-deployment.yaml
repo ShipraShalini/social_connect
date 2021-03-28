@@ -31,7 +31,6 @@ spec:
               mountPath: /var/log
         - name: fluent-sidecar
           image: shiprashalini/fluentd-es:v1.12.1-debian-1.0
-          imagePullPolicy: Always
           envFrom:
           - configMapRef:
               name: sc-fluentd-config

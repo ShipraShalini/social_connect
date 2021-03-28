@@ -1,3 +1,4 @@
+# Refer: https://github.com/fluent/fluentd-kubernetes-daemonset/blob/master/docker-image/v1.12/debian-elasticsearch7/Dockerfile
 FROM fluent/fluentd:v1.12.0-debian-1.0
 
 LABEL maintainer="Eduardo Silva <eduardo@treasure-data.com>"
