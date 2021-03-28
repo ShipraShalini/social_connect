@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: social-connect-config
+data:
+  DEBUG: ""
+  ALLOWED_HOSTS: "*"
+  LOGFILE: "/var/log/request.log"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sc-fluentd-config
+data:
+  FLUENT_ELASTICSEARCH_HOST: "elasticsearch.kube-logging.svc.cluster.local"
+  FLUENT_ELASTICSEARCH_PORT: "9200"
+  FLUENT_ELASTICSEARCH_SCHEME: "http"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sc-fluentd-config
+data:
+  fluent.conf: |
+    <source>
+      @type tail
+      format json
+      path /var/log/request.log
+      pos_file /var/log/request.log.pos
+      tag django
+    </source>
+
+    <match django>
+      @type copy
+      <store>
+        @type elasticsearch
+        @log_level info
+        include_tag_key true
+        host elasticsearch.kube-logging.svc.cluster.local
+        port 9200
+        logstash_format false
+        index_name django
+        scheme http
+        sniffer_class_name Fluent::Plugin::ElasticsearchSimpleSniffer
+        suppress_type_name true
+      </store>
+      <store>
+          @type stdout
+      </store>
+    </match>

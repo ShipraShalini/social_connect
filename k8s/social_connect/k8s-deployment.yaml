@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: social-connect
+  labels:
+    app: social-connect
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: social-connect
+  template:
+    metadata:
+      labels:
+        app: social-connect
+    spec:
+      containers:
+        - image: shiprashalini/social_connect:latest
+          name: social-connect
+          imagePullPolicy: Always
+          envFrom:
+          - secretRef:
+              name: social-connect-secrets
+          - configMapRef:
+              name: social-connect-config
+          ports:
+            - containerPort: 8000
+              name: gunicorn
+          volumeMounts:
+            - name: varlog
+              mountPath: /var/log
+        - name: fluent-sidecar
+          image: shiprashalini/fluentd-es:v1.12.1-debian-1.0
+          envFrom:
+          - configMapRef:
+              name: sc-fluentd-config
+          volumeMounts:
+          - name: varlog
+            mountPath: /var/log
+          - name: fluent-conf
+            mountPath: /fluentd/etc/fluent.conf
+            subPath: fluent.conf
+      volumes:
+      - name: varlog
+        emptyDir: {}
+      - name: fluent-conf
+        configMap:
+          name: sc-fluentd-config

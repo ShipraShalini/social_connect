@@ -1,7 +1,7 @@
 from rest_framework.permissions import IsAuthenticated
 
-from admin_override_views import AbstractAdminOverrideViewSet
 from post.serializers import PostSerializer
+from social_connect.admin_override_views import AbstractAdminOverrideViewSet
 from social_connect.custom_views import CustomModelViewSet
 
 
@@ -15,7 +15,7 @@ class PostViewSet(CustomModelViewSet):
         return self.request.user.posts.all()
 
     def create(self, request, *args, **kwargs):
-        request.data["user"] = request.user
+        request.data["user"] = request.user_id
         request.data["created_by"] = request.user
         return super().create(request, *args, **kwargs)
 
@@ -23,8 +23,6 @@ class PostViewSet(CustomModelViewSet):
 class AdminPostViewSet(AbstractAdminOverrideViewSet):
     """
     A Post CRUD for the admins.
-
-
     """
 
     serializer_class = PostSerializer
