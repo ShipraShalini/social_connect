@@ -1,7 +1,7 @@
-from admin_override_views import AbstractAdminOverrideViewSet
 from rest_framework.permissions import IsAuthenticated
 
 from post.serializers import PostSerializer
+from social_connect.admin_override_views import AbstractAdminOverrideViewSet
 from social_connect.custom_views import CustomModelViewSet
 
 
