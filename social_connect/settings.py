@@ -189,7 +189,7 @@ LOGGING = {
         "logfile": {
             "level": "INFO",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join("LOGFILE", "/var/log/request.log"),
+            "filename": os.getenv("LOGFILE", "/var/log/request.log"),
             "maxBytes": 50000,
             "backupCount": 7,
             "formatter": "json",
