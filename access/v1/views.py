@@ -1,8 +1,8 @@
-from django.http import JsonResponse
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.views import APIView
 
 from access.access_request_handler import AccessRequestHandler
+from social_connect.api_response import APIResponse
 from social_connect.permissions import IsSuperAdminUser
 
 
@@ -13,12 +13,11 @@ class AdminAccessRequestView(APIView):
         admin = request.user
         data = request.data
         req = AccessRequestHandler().create(admin, data)
-        return JsonResponse(req)
+        return APIResponse(req)
 
     def get(self, request, *args, **kwargs):
         data = AccessRequestHandler().get_request_list({"admin_id": request.user})
-        raise ValueError("abc")
-        return JsonResponse(data)
+        return APIResponse(data)
 
 
 class SuperAdminAccessRequestListView(APIView):
@@ -26,7 +25,7 @@ class SuperAdminAccessRequestListView(APIView):
 
     def get(self, request, *args, **kwargs):
         data = AccessRequestHandler().get_request_list({"superadmin_id": request.user})
-        return JsonResponse(data)
+        return APIResponse(data)
 
 
 class SuperAdminAccessRequestDecisionView(APIView):
@@ -36,4 +35,4 @@ class SuperAdminAccessRequestDecisionView(APIView):
         superadmin = request.user
         data = request.data
         req = AccessRequestHandler().take_decision(access_req_id, superadmin, data)
-        return JsonResponse(req)
+        return APIResponse(req)

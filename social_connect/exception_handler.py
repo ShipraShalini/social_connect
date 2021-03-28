@@ -1,15 +1,11 @@
-import json
 import logging
 from datetime import datetime
 from urllib.parse import quote
 
-from django.core.serializers.json import DjangoJSONEncoder
-from django.http import JsonResponse
-
-# from django.views.defaults import page_not_found
 from django.views.defaults import page_not_found, permission_denied
 from rest_framework import status
 
+from social_connect.api_response import APIResponse
 from social_connect.constants import BUILTIN_ERROR_MESSAGE, CLIENT_ERROR_SET
 from social_connect.utils import get_ip, get_user_agent, is_api_request
 
@@ -55,14 +51,14 @@ class ExceptionHandler:
             "error": exception.__class__.__name__,
             "error_msg": get_exception_message(exception),
         }
-        logger.error(json.dumps(error_data, cls=DjangoJSONEncoder), exc_info=True)
+        logger.error("error_log", extra=error_data, exc_info=True)
         return error_data
 
 
 def drf_exception_handler(exception, context):
     request = context["request"]
     error_data = ExceptionHandler().handle_exception(request, exception)
-    return JsonResponse(error_data, status=error_data["status"])
+    return APIResponse(error_data, is_success=False, status=error_data["status"])
 
 
 def json_page_not_found(request, exception, *args, **kwargs):
@@ -72,7 +68,7 @@ def json_page_not_found(request, exception, *args, **kwargs):
         "request_path": quote(request.path),
         "exception": get_exception_message(exception),
     }
-    return JsonResponse(context, status=status.HTTP_404_NOT_FOUND)
+    return APIResponse(context, is_success=False, status=status.HTTP_404_NOT_FOUND)
 
 
 def json_permission_denied(request, exception, *args, **kwargs):
@@ -82,4 +78,4 @@ def json_permission_denied(request, exception, *args, **kwargs):
         "request_path": quote(request.path),
         "exception": get_exception_message(exception),
     }
-    return JsonResponse(context, status=status.HTTP_404_NOT_FOUND)
+    return APIResponse(context, is_success=False, status=status.HTTP_403_FORBIDDEN)

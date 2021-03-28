@@ -12,9 +12,15 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
+from social_connect.api_response import APIResponse
+
 # Overriding default exception handlers for 404 & 403 errors.
 handler404 = "social_connect.exception_handler.json_page_not_found"
 handler403 = "social_connect.exception_handler.json_permission_denied"
+
+
+def health(request):
+    return APIResponse({"status": "healthy"})
 
 
 auth_urls = [
@@ -66,4 +72,5 @@ urlpatterns = [
     ),
     # Schema URLs
     *schema_urls,
+    path("", health),
 ]

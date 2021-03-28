@@ -29,3 +29,7 @@ BUILTIN_ERROR_MESSAGE = {
 }
 
 MODEL_VIEWSET_METHODNAMES = ["create", "retrieve", "list", "update", "destroy"]
+
+RESPONSE_KEY_DATA = "data"
+RESPONSE_KEY_ERROR = "error"
+RESPONSE_KEY_IS_SUCCESS = "is_success"

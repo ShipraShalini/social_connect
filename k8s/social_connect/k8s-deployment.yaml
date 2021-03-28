@@ -26,3 +26,24 @@ spec:
           ports:
             - containerPort: 8000
               name: gunicorn
+          volumeMounts:
+            - name: varlog
+              mountPath: /var/log
+        - name: fluent-sidecar
+          image: shiprashalini/fluentd-es:v1.12.1-debian-1.0
+          imagePullPolicy: Always
+          envFrom:
+          - configMapRef:
+              name: sc-fluentd-config
+          volumeMounts:
+          - name: varlog
+            mountPath: /var/log
+          - name: fluent-conf
+            mountPath: /fluentd/etc/fluent.conf
+            subPath: fluent.conf
+      volumes:
+      - name: varlog
+        emptyDir: {}
+      - name: fluent-conf
+        configMap:
+          name: sc-fluentd-config

@@ -1,6 +1,7 @@
-from django.http import JsonResponse
-from rest_framework import mixins, status
+from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
+
+from social_connect.api_response import APIResponse
 
 
 def get_status_code(response):
@@ -16,9 +17,10 @@ class CustomCreateModelMixin(mixins.CreateModelMixin):
     def create(self, request, *args, **kwargs):
         """Create an object."""
         response = super(CustomCreateModelMixin, self).create(request, *args, **kwargs)
-        return JsonResponse(
+        return APIResponse(
             data=response.data,
-            status=status.HTTP_201_CREATED,
+            status=get_status_code(response),
+            headers=response._headers,
         )
 
 
@@ -28,7 +30,9 @@ class CustomListModelMixin(mixins.ListModelMixin):
     def list(self, request, *args, **kwargs):
         """Retrieve a list of objects."""
         response = super(CustomListModelMixin, self).list(request, *args, **kwargs)
-        return JsonResponse(data=response.data, status=get_status_code(response))
+        return APIResponse(
+            data=response.data, status=response.status_code, headers=response._headers
+        )
 
 
 class CustomRetrieveModelMixin(mixins.RetrieveModelMixin):
@@ -39,7 +43,9 @@ class CustomRetrieveModelMixin(mixins.RetrieveModelMixin):
         response = super(CustomRetrieveModelMixin, self).retrieve(
             request, *args, **kwargs
         )
-        return JsonResponse(data=response.data, status=get_status_code(response))
+        return APIResponse(
+            data=response.data, status=response.status_code, headers=response._headers
+        )
 
 
 class CustomUpdateModelMixin(mixins.UpdateModelMixin):
@@ -48,7 +54,7 @@ class CustomUpdateModelMixin(mixins.UpdateModelMixin):
     def update(self, request, *args, **kwargs):
         """Update an object."""
         response = super(CustomUpdateModelMixin, self).update(request, *args, **kwargs)
-        return JsonResponse(data=response.data, status=get_status_code(request))
+        return APIResponse(data=response.data, status=get_status_code(response))
 
 
 class CustomDestroyModelMixin(mixins.DestroyModelMixin):
@@ -59,7 +65,7 @@ class CustomDestroyModelMixin(mixins.DestroyModelMixin):
         response = super(CustomDestroyModelMixin, self).destroy(
             request, *args, **kwargs
         )
-        return JsonResponse(data=response.data, status=get_status_code(response))
+        return APIResponse(data=response.data, status=get_status_code(response))
 
 
 class CustomModelViewSet(

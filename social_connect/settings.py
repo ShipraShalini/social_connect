@@ -182,14 +182,27 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "INFO",
+            "level": "DEBUG",
             "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "logfile": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join("LOGFILE", "/var/log/request.log"),
+            "maxBytes": 50000,
+            "backupCount": 7,
             "formatter": "json",
         },
     },
     "loggers": {
-        "access_log": {
+        "django.db.backends": {
+            "level": "ERROR",
             "handlers": ["console"],
+            "propagate": False,
+        },
+        "access_log": {
+            "handlers": ["console", "logfile"],
             "level": "INFO",
             "propagate": True,
         },
