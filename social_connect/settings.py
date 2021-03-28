@@ -182,37 +182,14 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "DEBUG",
+            "level": "INFO",
             "class": "logging.StreamHandler",
-            "formatter": "verbose",
-        },
-        "logfile": {
-            "level": "INFO",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(BASE_DIR, "access.log"),
-            "maxBytes": 50000,
-            "backupCount": 7,
-            "formatter": "standard",
-        },
-        "fluent": {
-            "level": "INFO",
-            "class": "fluent.handler.FluentHandler",
             "formatter": "json",
-            "tag": "app.debug",
-            "host": os.getenv("FLUENT_HOST"),
-            "port": 24224,
-            # 'timeout':3.0,
-            "verbose": True,
         },
     },
     "loggers": {
-        "django.db.backends": {
-            "level": "ERROR",
-            "handlers": ["console", "fluent"],
-            "propagate": False,
-        },
         "access_log": {
-            "handlers": ["logfile", "fluent"],
+            "handlers": ["console"],
             "level": "INFO",
             "propagate": True,
         },

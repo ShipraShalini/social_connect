@@ -5,4 +5,4 @@ RUN pip3 install -qU pip wheel setuptools
 COPY requirements.txt /app
 RUN pip3 install -r requirements.txt
 COPY ./ /app
-CMD ["gunicorn", "--bind", ":8000", "--workers", "3", "social_connect.wsgi"]
+CMD ["gunicorn", "--bind", ":8000", "--workers", "3", "--log-file" , "/var/log/gunicorn.log",  "social_connect.wsgi"]
