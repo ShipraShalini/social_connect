@@ -184,6 +184,14 @@ LOGGING = {
         "console": {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "logfile": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join("LOGFILE", "/var/log/request.log"),
+            "maxBytes": 50000,
+            "backupCount": 7,
             "formatter": "json",
         },
     },
@@ -194,7 +202,7 @@ LOGGING = {
             "propagate": False,
         },
         "access_log": {
-            "handlers": ["console"],
+            "handlers": ["console", "logfile"],
             "level": "INFO",
             "propagate": True,
         },
