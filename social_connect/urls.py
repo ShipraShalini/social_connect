@@ -6,6 +6,7 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from rest_framework.decorators import api_view
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -19,6 +20,7 @@ handler404 = "social_connect.exception_handler.json_page_not_found"
 handler403 = "social_connect.exception_handler.json_permission_denied"
 
 
+@api_view(("GET",))
 def health(request):
     return APIResponse({"status": "healthy"})
 
