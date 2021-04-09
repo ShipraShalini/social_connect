@@ -17,7 +17,12 @@ class PostViewSet(CustomModelViewSet):
     def create(self, request, *args, **kwargs):
         request.data["user"] = request.user.id
         request.data["created_by"] = request.user.id
+        request.data["updated_by"] = request.user.id
         return super().create(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        request.data["updated_by"] = request.user.id
+        return super().partial_update(request, *args, **kwargs)
 
 
 class AdminPostViewSet(AbstractAdminOverrideViewSet):
@@ -33,4 +38,9 @@ class AdminPostViewSet(AbstractAdminOverrideViewSet):
     def create(self, request, *args, **kwargs):
         request.data["user"] = request.access_req.user_id
         request.data["created_by"] = request.access_req.admin_id
+        request.data["updated_by"] = request.access_req.admin_id
         return super().create(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        request.data["updated_by"] = request.access_req.admin_id
+        return super().partial_update(request, *args, **kwargs)

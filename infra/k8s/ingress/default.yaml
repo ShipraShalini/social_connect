@@ -10,7 +10,7 @@ spec:
   - host: app.shipra.com
     http:
       paths:
-        - path: /sc
+        - path: /
           pathType: Prefix
           backend:
             service:
