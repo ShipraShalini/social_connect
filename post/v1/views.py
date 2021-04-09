@@ -15,7 +15,7 @@ class PostViewSet(CustomModelViewSet):
         return self.request.user.posts.all()
 
     def create(self, request, *args, **kwargs):
-        request.data["user"] = request.user_id
+        request.data["user"] = request.user.id
         request.data["created_by"] = request.user
         return super().create(request, *args, **kwargs)
 
