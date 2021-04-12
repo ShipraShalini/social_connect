@@ -5,6 +5,7 @@ from social_connect.api_response import APIResponse
 
 
 def get_status_code(response):
+    """Get Status code from the response."""
     for attr in ["status", "status_code"]:
         code = getattr(response, attr, None)
         if code:

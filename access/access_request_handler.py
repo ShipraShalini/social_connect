@@ -1,3 +1,5 @@
+from rest_framework.exceptions import ValidationError
+
 from access.constants import (
     STATUS_APPROVED,
     STATUS_DECLINED,
@@ -12,7 +14,10 @@ from access.utils import get_last_valid_access_req_date
 
 
 class AccessRequestHandler:
+    """Class for handling AccessRequests."""
+
     def create(self, admin, data):
+        """Create AccessRequest."""
         # Discarding all other keys provided in the data as
         # only the following fields should be updated.
         data = {
@@ -24,6 +29,7 @@ class AccessRequestHandler:
         return AccessRequestSerializer(req).data
 
     def get_request_list(self, query):
+        """Return the list of all access requests for an admin or a superadmin."""
         data = {
             STATUS_PENDING: [],
             STATUS_APPROVED: [],
@@ -46,12 +52,16 @@ class AccessRequestHandler:
         return data
 
     def take_decision(self, access_req_id, superadmin, data):
+        """Approve or Decline an AccessRequest."""
+        status = data.get("status")
+        if status not in [STATUS_APPROVED, STATUS_DECLINED]:
+            raise ValidationError("Status is missing or is invalid.")
         # Discarding all other keys provided in the data as
         # only the following fields should be updated.
         data = {
             "superadmin": superadmin,
             "decision_reason": data.get("decision_reason"),
-            "status": data["status"],
+            "status": status,
         }
         AccessRequest.objects.filter(uuid=access_req_id).update(**data)
         req = AccessRequest.objects.get(uuid=access_req_id)
@@ -62,12 +72,15 @@ class AccessRequestHandler:
         access_req.save()
 
     def mark_expired(self):
+        """Mark a request expired."""
+        # TODO: Run a periodic task to mark requests expired.
         last_valid_date = get_last_valid_access_req_date()
         AccessRequest.objects.filter(
             status=STATUS_PENDING, created_at__lt=last_valid_date
         ).update(status=STATUS_EXPIRED)
 
     def get_oldest_valid_approved_access_req(self, admin, user_id):
+        """Return the oldest valid aprroved access req as it will be used first."""
         return (
             AccessRequest.objects.select_related("user")
             .filter(

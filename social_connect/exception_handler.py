@@ -29,7 +29,10 @@ def get_exception_message(exception):
 
 
 class ExceptionHandler:
+    """Exception handler for the API requests."""
+
     def get_status_code(self, exc):
+        """Get HTTP status code for the exception."""
         status_code = getattr(exc, "status_code", None)
         if status_code is not None:
             return status_code
@@ -56,12 +59,14 @@ class ExceptionHandler:
 
 
 def drf_exception_handler(exception, context):
+    """Custom exception handler for DRF."""
     request = context["request"]
     error_data = ExceptionHandler().handle_exception(request, exception)
     return APIResponse(error_data, is_success=False, status=error_data["status"])
 
 
 def json_page_not_found(request, exception, *args, **kwargs):
+    """Override 404 error to return a JSON Error"""
     if not is_api_request(request):
         return page_not_found(request, exception, *args, **kwargs)
     context = {
@@ -72,6 +77,7 @@ def json_page_not_found(request, exception, *args, **kwargs):
 
 
 def json_permission_denied(request, exception, *args, **kwargs):
+    """Override 403 error to return a JSON Error"""
     if not is_api_request(request):
         return permission_denied(request, exception, *args, **kwargs)
     context = {

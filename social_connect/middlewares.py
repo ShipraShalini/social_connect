@@ -172,6 +172,8 @@ class LogMiddleware:
 
 
 class JSONExceptionMiddleWare:
+    """Return all API exceptions as JSON."""
+
     def __init__(self, get_response):
         """Initialize."""
         self.get_response = get_response

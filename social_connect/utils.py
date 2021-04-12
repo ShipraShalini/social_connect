@@ -9,8 +9,10 @@ def get_user_agent(headers):
 
 
 def get_ip(headers):
+    """Get IP from the request headers."""
     return headers.get("HTTP_X_FORWARDED_FOR") or headers.get("REMOTE_ADDR")
 
 
 def is_api_request(request):
+    """Check if the request is consuming an API."""
     return "api" in request.path

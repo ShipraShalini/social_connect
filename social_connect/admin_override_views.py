@@ -12,7 +12,7 @@ class AbstractAdminOverrideViewSet(CustomModelViewSet):
     A CRUD viewset for the admins.
 
     Checks for a valid approved access request for the request to be authorized.
-    Superadmins also need a valid approved access request for record.
+    SuperAdmins also need a valid approved access request for record.
     """
 
     permission_classes = [IsAuthenticated, IsAdminUser]
@@ -69,6 +69,10 @@ class AbstractAdminOverrideViewSet(CustomModelViewSet):
         return response
 
     def get_approved_access_req(self, request):
+        """
+        Check if the admin has proper access.
+        If yes, attach the access_req to the request.
+        """
         admin = request.user
         user_id = request.data.get("user_id")
         if not user_id:
