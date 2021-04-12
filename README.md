@@ -47,4 +47,3 @@ The app can be run in two ways, using `docker-compose` or `kubernetes`.
 - Restrictions on Kibana Dashboard Access.
 - Slack/Discord Integration.
 
-
