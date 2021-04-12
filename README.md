@@ -35,6 +35,8 @@ The app can be run in two ways, using `docker-compose` or `kubernetes`.
 - Apply the manifests in PROJECT_ROOT/infra/k8s directory.
 - Connect to the postgres pod and run PROJECT_ROOT/init.sql script.
 
+###### Schema URL
+`http://localhost:8000/schema/swaggerui/`
 
 ### Improvements needed for Production Deployment
 - Robust User Management.
@@ -46,4 +48,3 @@ The app can be run in two ways, using `docker-compose` or `kubernetes`.
 - cAdvisor + Prometheus monitoring.
 - Restrictions on Kibana Dashboard Access.
 - Slack/Discord Integration.
-
