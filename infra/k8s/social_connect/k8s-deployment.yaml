@@ -5,7 +5,11 @@ metadata:
   labels:
     app: social-connect
 spec:
-  replicas: 1
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 50%
   selector:
     matchLabels:
       app: social-connect
@@ -29,6 +33,10 @@ spec:
           volumeMounts:
             - name: varlog
               mountPath: /var/log
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
         - name: fluent-sidecar
           image: shiprashalini/fluentd-es:v1.12.1-debian-1.0
           envFrom:
